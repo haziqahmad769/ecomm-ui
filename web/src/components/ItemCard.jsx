@@ -1,17 +1,19 @@
 const ItemCard = ({ item, updateQuantity }) => {
-  const reduceQuantity = () => {
+  const reduceQuantity = (e) => {
+    e.preventDefault();
     if (item.quantity > 1) {
       updateQuantity(item.id, item.quantity - 1);
     }
   };
 
-  const addQuantity = () => {
+  const addQuantity = (e) => {
+    e.preventDefault();
     updateQuantity(item.id, item.quantity + 1);
   };
   return (
     <div className="">
       {/* card */}
-      <div className="flex flex-row card justify-center items-center rounded-md bg-white shadow-lg p-2 my-4 gap-4">
+      <div className="flex flex-row card justify-between items-center rounded-md bg-white shadow-lg p-2 my-4 gap-4">
         <div className="flex flex-row">
           {/* image */}
           <figure className=" rounded-lg w-12 h-12 ">
