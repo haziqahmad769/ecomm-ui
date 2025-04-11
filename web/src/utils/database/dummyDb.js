@@ -57,3 +57,38 @@ export const PRODUCT = {
   craetedAt: "2025-03-17T05:23:08.539Z",
   updatedAt: "2025-03-17T05:23:08.539Z",
 };
+
+export const CART_ITEMS = {
+  cartId: 3,
+  userId: 1,
+  totalQuantity: 8,
+  totalPrice: "540.00",
+  items: [
+    {
+      id: 26,
+      product: {
+        id: 4,
+        _id: "7c71ab7202169a6d2145e478d16b2b3c",
+        name: "voucher",
+        price: 10,
+        productImage:
+          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+      },
+      quantity: 6,
+      totalPrice: "60.00",
+    },
+    {
+      id: 27,
+      product: {
+        id: 3,
+        _id: "34d3a39e3990e14a8c6c79376db2ec6e",
+        name: "balang air",
+        price: 240,
+        productImage:
+          "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+      },
+      quantity: 2,
+      totalPrice: "480.00",
+    },
+  ],
+};
