@@ -1,7 +1,7 @@
 const ProductCard = ({ product }) => {
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-col items-center card w-56 rounded-md bg-white shadow-lg p-4">
+      <div className="flex flex-col items-center card w-72 md:w-48 rounded-md bg-white shadow-lg p-4">
         <div>
           {/* image */}
           <figure className="rounded-lg w-36 h-36 ">

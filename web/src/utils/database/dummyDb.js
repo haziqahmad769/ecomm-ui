@@ -42,3 +42,18 @@ export const PRODUCT_LISTS = [
     updatedAt: "2025-03-25T07:50:36.404Z",
   },
 ];
+
+export const PRODUCT = {
+  id: 5,
+  _id: "985fb233ae74139f73fc46f4942763aa",
+  name: "Balang Air",
+  description: "Untuk isi air",
+  quantity: 7,
+  price: "900.00",
+  productImage:
+    "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
+  category: "",
+  available: true,
+  craetedAt: "2025-03-17T05:23:08.539Z",
+  updatedAt: "2025-03-17T05:23:08.539Z",
+};

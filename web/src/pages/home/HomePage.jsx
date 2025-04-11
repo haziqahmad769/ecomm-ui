@@ -18,8 +18,8 @@ const HomePage = () => {
         <p className="text-white">Location</p>
       </div>
       {/* products catalogue */}
-      <div className="w-max-lg p-4">
-        <h2 className="text-rose-500 text-lg font-semibold">Our Products</h2>
+      <div className="p-4">
+        <h2 className="text-rose-500 text-lg font-semibold my-4">Our Products</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* product card */}
