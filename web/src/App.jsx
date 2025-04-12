@@ -4,6 +4,7 @@ import ProductDetail from "./pages/product/ProductDetail";
 import CartItem from "./pages/cart/CartItem";
 import Checkout from "./pages/checkout/Checkout";
 import PaymentSuccess from "./pages/payment/PaymentSuccess";
+import Dashboard from "./pages/admin/Dashboard";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/cart" element={<CartItem />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </div>
   );
