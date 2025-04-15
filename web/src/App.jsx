@@ -6,6 +6,7 @@ import Checkout from "./pages/checkout/Checkout";
 import PaymentSuccess from "./pages/payment/PaymentSuccess";
 import Dashboard from "./pages/admin/Dashboard";
 import LoginPage from "./pages/login/LoginPage";
+import SignupPage from "./pages/signup/SignupPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
       </Routes>
     </div>
   );
