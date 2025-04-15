@@ -1,15 +1,109 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 const ItemCard = ({ item, updateQuantity }) => {
+  // update quantity in cart
+  const {
+    mutate: updateItemQuantity,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: async ({ id, quantity }) => {
+      try {
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/carts/${id}`, {
+          method: "PUT",
+          credentials: "include",
+          headers,
+          body: JSON.stringify({ quantity }),
+        });
+
+        const data = await res.json();
+        // console.log( "product id:", product_id, "quantity:", quantity);
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+  });
+
+  //delete item
+  const queryClient = useQueryClient();
+  const { mutate: deleteItem } = useMutation({
+    mutationFn: async ({ id }) => {
+      try {
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/carts/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+          headers,
+        });
+
+        const data = await res.json();
+        // console.log( "product id:", product_id, "quantity:", quantity);
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["cart"]);
+    },
+  });
+
   const reduceQuantity = (e) => {
     e.preventDefault();
     if (item.quantity > 1) {
       updateQuantity(item.id, item.quantity - 1);
     }
+    updateItemQuantity({ id: item.id, quantity: item.quantity - 1 });
   };
 
   const addQuantity = (e) => {
     e.preventDefault();
     updateQuantity(item.id, item.quantity + 1);
+    updateItemQuantity({ id: item.id, quantity: item.quantity + 1 });
   };
+
+  if (isPending) {
+    return <div>Add to cart...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    deleteItem({ id: item.id });
+  };
+
   return (
     <div className="">
       {/* card */}
@@ -53,7 +147,10 @@ const ItemCard = ({ item, updateQuantity }) => {
         </div>
 
         {/* delete button */}
-        <button className="btn bg-rose-500 text-white hover:bg-rose-600 rounded-md">
+        <button
+          className="btn bg-rose-500 text-white hover:bg-rose-600 rounded-md"
+          onClick={handleSubmit}
+        >
           X
         </button>
       </div>

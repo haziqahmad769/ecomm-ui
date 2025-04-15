@@ -1,9 +1,47 @@
-import { useState } from "react";
-import { CART_ITEMS } from "../../utils/database/dummyDb";
+import { useEffect, useState } from "react";
 import ItemCard from "../../components/ItemCard";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const Checkout = () => {
-  const [items, setItems] = useState(CART_ITEMS.items);
+  //get cart
+  const {
+    data: cart,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["cart"],
+    queryFn: async () => {
+      try {
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/carts`, {
+          method: "GET",
+          credentials: "include",
+          headers,
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+  });
+
+  const [items, setItems] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -14,6 +52,12 @@ const Checkout = () => {
     city: "",
     state: "",
   });
+
+  useEffect(() => {
+    if (cart?.items) {
+      setItems(cart.items);
+    }
+  }, [cart]);
 
   const updateQuantity = (id, newQuantity) => {
     setItems((prevItems) =>
@@ -39,12 +83,75 @@ const Checkout = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  //checkout
+  const { mutate: checkout, isPending } = useMutation({
+    mutationFn: async ({ name, email, address, phoneNumber }) => {
+      try {
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/payments/checkout`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers,
+            body: JSON.stringify({ name, email, address, phoneNumber }),
+          }
+        );
+
+        const data = await res.json();
+        // console.log( "product id:", product_id, "quantity:", quantity);
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    onSuccess: (data) => {
+      window.location.href = data.paymentUrl;
+    },
+  });
+
+  if (isLoading) {
+    return <div>Loading cart...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (isPending) {
+    return <div>Checkout...</div>;
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.postcode}, ${formData.city}, ${formData.state}`;
+    checkout({
+      name: formData.name,
+      email: formData.email,
+      address: fullAddress,
+      phoneNumber: formData.phoneNumber,
+    });
+  };
+
   return (
     <div className=" flex flex-col items-center p-4">
       <div className="flex flex-col my-4">
         <h2 className=" text-rose-500 text-lg font-semibold">Checkout</h2>
 
-        <form action="" className="flex flex-col gap-4">
+        <form action="" className="flex flex-col gap-4" onSubmit={handleSubmit}>
           {/*name, phone number & email  */}
           <div className=" flex flex-col rounded-md card bg-white shadow-lg p-4">
             {/* name */}

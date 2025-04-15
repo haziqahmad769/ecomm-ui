@@ -1,7 +1,53 @@
+import { useQuery } from "@tanstack/react-query";
 import ProductCard from "../../components/ProductCard";
-import { PRODUCT_LISTS } from "../../utils/database/dummyDb";
+// import { PRODUCT_LISTS } from "../../utils/database/dummyDb";
 
 const HomePage = () => {
+  // get all product
+  const {
+    data: products,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      try {
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`, {
+          method: "GET",
+          credentials: "include",
+          headers,
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+  });
+
+  if (isLoading) {
+    return <div>Loading products...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
   return (
     <div className="flex flex-col items-center">
       {/* shop details */}
@@ -19,11 +65,13 @@ const HomePage = () => {
       </div>
       {/* products catalogue */}
       <div className="p-4">
-        <h2 className="text-rose-500 text-lg font-semibold my-4">Our Products</h2>
+        <h2 className="text-rose-500 text-lg font-semibold my-4">
+          Our Products
+        </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* product card */}
-          {PRODUCT_LISTS.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
