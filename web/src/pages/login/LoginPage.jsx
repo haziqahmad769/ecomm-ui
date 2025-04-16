@@ -1,9 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   // login
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const { mutate: login, isPending } = useMutation({
     mutationFn: async ({ email, password }) => {
       try {
@@ -27,6 +30,12 @@ const LoginPage = () => {
       } catch (error) {
         throw new Error(error);
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      setTimeout(() => {
+        navigate("/");
+      });
     },
   });
 

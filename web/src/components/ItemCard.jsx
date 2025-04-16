@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const ItemCard = ({ item, updateQuantity }) => {
   // update quantity in cart
@@ -37,6 +38,13 @@ const ItemCard = ({ item, updateQuantity }) => {
       } catch (error) {
         throw new Error(error);
       }
+    },
+    onSuccess: () => {
+      toast.success("Update quantity");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 

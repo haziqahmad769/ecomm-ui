@@ -1,8 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 const Shop = () => {
   //create product
+  const queryClient = useQueryClient();
+
   const { mutate: createProduct, isPending } = useMutation({
     mutationFn: async ({ name, quantity, price, productImage, category }) => {
       try {
@@ -33,6 +36,13 @@ const Shop = () => {
       } catch (error) {
         throw new Error(error);
       }
+    },
+    onSuccess: () => {
+      toast.success("Product created");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 

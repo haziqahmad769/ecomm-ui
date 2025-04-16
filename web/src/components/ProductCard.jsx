@@ -1,8 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const ProductCard = ({ product }) => {
   // add to cart
+  const queryClient = useQueryClient();
+
   const {
     mutate: addToCart,
     isPending,
@@ -38,6 +45,13 @@ const ProductCard = ({ product }) => {
       } catch (error) {
         throw new Error(error);
       }
+    },
+    onSuccess: () => {
+      toast.success("Add to cart");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 

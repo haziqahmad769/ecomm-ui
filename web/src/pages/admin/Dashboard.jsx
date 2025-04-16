@@ -2,7 +2,7 @@ import { useState } from "react";
 import Shop from "./Shop";
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("orders");
+  const [activeTab, setActiveTab] = useState("shop");
   return (
     <div className=" flex flex-col items-center p-4">
       <div className=" flex flex-col items-center my-4">

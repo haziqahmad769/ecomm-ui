@@ -1,8 +1,45 @@
 import { useEffect, useState } from "react";
 import ItemCard from "../../components/ItemCard";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const Checkout = () => {
+  //get logged in user
+  const { data: authUser } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: async () => {
+      try {
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/profile`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers,
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+  });
+
   //get cart
   const {
     data: cart,
@@ -52,6 +89,16 @@ const Checkout = () => {
     city: "",
     state: "",
   });
+
+  useEffect(() => {
+    if (authUser) {
+      setFormData((prev) => ({
+        ...prev,
+        name: authUser.name || "",
+        email: authUser.email || "",
+      }));
+    }
+  }, [authUser]);
 
   useEffect(() => {
     if (cart?.items) {
@@ -107,7 +154,7 @@ const Checkout = () => {
         );
 
         const data = await res.json();
-        // console.log( "product id:", product_id, "quantity:", quantity);
+        console.log( name, email, address, phoneNumber);
 
         if (!res.ok) {
           throw new Error(data.error || "Something went wrong");
@@ -119,7 +166,11 @@ const Checkout = () => {
       }
     },
     onSuccess: (data) => {
+      toast.success("Processing for payment");
       window.location.href = data.paymentUrl;
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 

@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 const SignupPage = () => {
@@ -25,6 +26,9 @@ const SignupPage = () => {
       } catch (error) {
         throw new Error(error);
       }
+    },
+    onSuccess: () => {
+      toast.success("Account created successfully");
     },
   });
 

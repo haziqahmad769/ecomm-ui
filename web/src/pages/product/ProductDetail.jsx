@@ -1,6 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 // import { PRODUCT } from "../../utils/database/dummyDb";
 
 const ProductDetail = () => {
@@ -42,6 +43,8 @@ const ProductDetail = () => {
   });
 
   // add to cart
+  const queryClient = useQueryClient();
+
   const {
     mutate: addToCart,
     isPending,
@@ -77,6 +80,13 @@ const ProductDetail = () => {
       } catch (error) {
         throw new Error(error);
       }
+    },
+    onSuccess: () => {
+      toast.success("Add to cart");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
