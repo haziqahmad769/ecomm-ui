@@ -7,10 +7,12 @@ import PaymentSuccess from "./pages/payment/PaymentSuccess";
 import Dashboard from "./pages/admin/Dashboard";
 import LoginPage from "./pages/login/LoginPage";
 import SignupPage from "./pages/signup/SignupPage";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <div>
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/product-detail/:productId" element={<ProductDetail />} />
