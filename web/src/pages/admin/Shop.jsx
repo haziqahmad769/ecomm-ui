@@ -1,6 +1,41 @@
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
 const Shop = () => {
+  //create product
+  const { mutate: createProduct, isPending } = useMutation({
+    mutationFn: async ({ name, quantity, price, productImage, category }) => {
+      try {
+        const token = localStorage.getItem("jwt");
+        const formData = new FormData();
+
+        formData.append("name", name);
+        formData.append("quantity", quantity);
+        formData.append("price", price);
+        formData.append("productImage", productImage);
+        formData.append("category", category);
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+  });
+
   const [formData, setFormData] = useState({
     image: null,
     previewImage: null,
@@ -25,13 +60,28 @@ const Shop = () => {
       }));
     }
   };
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createProduct({
+      name: formData.name,
+      quantity: formData.quantity,
+      price: formData.price,
+      productImage: formData.image,
+      category: formData.category,
+    });
+  };
   return (
     <div className=" flex flex-col items-center p-4">
       <div className="flex flex-col rounded-md card bg-white shadow-lg p-4">
         <h2 className="text-gray-700 text-lg font-semibold my-2">Shop</h2>
 
         {/* product form */}
-        <form action="">
+        <form action="" onSubmit={handleSubmit}>
           {/* product image */}
           <div className="mb-4">
             <label className="text-gray-700 text-md">Product Image</label>
